@@ -1,5 +1,6 @@
 ---
 - name: Gather System Information
+  hosts: all
   gather_facts: yes
   tasks:
     - name: Collect OS Information
