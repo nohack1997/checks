@@ -1,0 +1,43 @@
+---
+- name: Gather System Information
+  gather_facts: yes
+  tasks:
+    - name: Collect OS Information
+      debug:
+        msg: |
+          OS Family: {{ ansible_os_family }}
+          Distribution: {{ ansible_distribution }}
+          Distribution Version: {{ ansible_distribution_version }}
+          Kernel: {{ ansible_kernel }}
+
+    - name: Collect Memory Information
+      debug:
+        msg: |
+          Total Memory: {{ ansible_memtotal_mb }}MB
+          Free Memory: {{ ansible_memfree_mb }}MB
+          Swap Total: {{ ansible_swaptotal_mb }}MB
+          Swap Free: {{ ansible_swapfree_mb }}MB
+
+    - name: Collect CPU Information
+      debug:
+        msg: |
+          CPU Cores: {{ ansible_processor_cores }}
+          CPU Count: {{ ansible_processor_count }}
+          CPU Model: {{ ansible_processor[2] }}
+
+    - name: Collect Disk Information
+      debug:
+        msg: |
+          {% for mount in ansible_mounts %}
+          Mount: {{ mount.mount }}
+          Size: {{ mount.size_total | human_readable }}
+          Free: {{ mount.size_available | human_readable }}
+          {% endfor %}
+
+    - name: Get Running Services
+      shell: systemctl list-units --type=service --state=running
+      register: running_services
+      
+    - name: Display Running Services
+      debug:
+        msg: "{{ running_services.stdout_lines }}"
